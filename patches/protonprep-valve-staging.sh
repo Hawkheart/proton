@@ -332,14 +332,21 @@
     echo "WINE: -GAME FIXES- Fix Yakuza 5 cutscenes audio"
     patch -Np1 < ../patches/game-patches/yakuza5-cutscenes.patch
 
+    # https://github.com/ValveSoftware/Proton/issues/7083
+    echo "WINE: -GAME FIXES- Fix Video playback in ANONYMOUS;CODE"
+    patch -Np1 < ../patches/game-patches/anonymouscode-cutscenes.patch
+
 ### END GAME PATCH SECTION ###
 
 ### (2-4) WINE HOTFIX/BACKPORT SECTION ###
+    # https://gitlab.winehq.org/wine/wine/-/merge_requests/3867
+    echo "WINE: -BACKPORT- Anonymous;Code backports"
+    patch -Np1 < ../patches/wine-hotfixes/upstream/3867.patch
 
     # https://gitlab.winehq.org/wine/wine/-/merge_requests/3777
     echo "WINE: -BACKPORT- R6 Siege backport"
     patch -Np1 < ../patches/wine-hotfixes/upstream/3777.patch
-    
+       
     # https://gitlab.winehq.org/wine/wine/-/merge_requests/2403
     echo "WINE: -BACKPORT- LibreVR Revive backport"
     patch -Np1 < ../patches/wine-hotfixes/upstream/2403.patch

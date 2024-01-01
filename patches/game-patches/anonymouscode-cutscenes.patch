@@ -1,0 +1,37 @@
+diff --git a/dlls/mfplat/mediatype.c b/dlls/mfplat/mediatype.c
+index 99fe4d1c733..f2fb5c33dc6 100644
+--- a/dlls/mfplat/mediatype.c
++++ b/dlls/mfplat/mediatype.c
+@@ -408,6 +408,13 @@ static HRESULT WINAPI mediatype_SetUINT64(IMFMediaType *iface, REFGUID key, UINT
+ {
+     struct media_type *media_type = impl_from_IMFMediaType(iface);
+ 
++    // ANONYMOUS;CODE hack - it does some math wrong and sets the media type
++    // to the wrong resolution... (1920x1088 instead of 1920x1080)
++
++    const char *sgi = getenv("SteamGameId");
++    if (sgi && !strcmp(sgi, "2291020") && value == 0x78000000440)
++        value = 0x78000000438;
++
+     TRACE("%p, %s, %s.\n", iface, debugstr_attr(key), wine_dbgstr_longlong(value));
+ 
+     return attributes_SetUINT64(&media_type->attributes, key, value);
+diff --git a/dlls/winegstreamer/mfplat.c b/dlls/winegstreamer/mfplat.c
+index 09b0cc9eb2a..ea9a4c89abd 100644
+--- a/dlls/winegstreamer/mfplat.c
++++ b/dlls/winegstreamer/mfplat.c
+@@ -538,8 +538,13 @@ static IMFMediaType *mf_media_type_from_wg_format_video(const struct wg_format *
+                 stride = -stride;
+             IMFMediaType_SetUINT32(type, &MF_MT_DEFAULT_STRIDE, stride);
+ 
++            // ANONYMOUS;CODE expects MF_MT_MINIMUM_DISPLAY_APERTURE to always be set.
++
++            const char *sgi = getenv("SteamGameId");
++
+             if (format->u.video.padding.left || format->u.video.padding.right
+-                || format->u.video.padding.top || format->u.video.padding.bottom)
++                || format->u.video.padding.top || format->u.video.padding.bottom
++                || (sgi && !strcmp(sgi, "2291020")))
+             {
+                 MFVideoArea aperture =
+                 {

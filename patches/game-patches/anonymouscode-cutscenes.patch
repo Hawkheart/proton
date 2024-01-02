@@ -1,17 +1,25 @@
 diff --git a/dlls/mfplat/mediatype.c b/dlls/mfplat/mediatype.c
-index 99fe4d1c733..f2fb5c33dc6 100644
+index 99fe4d1c733..9f9b43ccdaa 100644
 --- a/dlls/mfplat/mediatype.c
 +++ b/dlls/mfplat/mediatype.c
-@@ -408,6 +408,13 @@ static HRESULT WINAPI mediatype_SetUINT64(IMFMediaType *iface, REFGUID key, UINT
+@@ -408,6 +408,21 @@ static HRESULT WINAPI mediatype_SetUINT64(IMFMediaType *iface, REFGUID key, UINT
  {
      struct media_type *media_type = impl_from_IMFMediaType(iface);
  
-+    // ANONYMOUS;CODE hack - it does some math wrong and sets the media type
-+    // to the wrong resolution... (1920x1088 instead of 1920x1080)
++    // ANONYMOUS;CODE hack - it purposefully sets the resolution incorrectly...
 +
 +    const char *sgi = getenv("SteamGameId");
-+    if (sgi && !strcmp(sgi, "2291020") && value == 0x78000000440)
-+        value = 0x78000000438;
++    if (sgi && !strcmp(sgi, "2291020")) {
++        switch (value) {
++            case 0x78000000440:
++            case 0x46000000250:
++            case 0x26000000260:
++            case 0x4e0000002c0:
++                return S_OK;
++            default:
++                break;
++        }
++    }
 +
      TRACE("%p, %s, %s.\n", iface, debugstr_attr(key), wine_dbgstr_longlong(value));
  

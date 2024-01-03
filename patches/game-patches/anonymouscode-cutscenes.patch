@@ -1,8 +1,8 @@
 diff --git a/dlls/mfplat/mediatype.c b/dlls/mfplat/mediatype.c
-index 99fe4d1c733..9f9b43ccdaa 100644
+index 99fe4d1c733..bdeb2abcf44 100644
 --- a/dlls/mfplat/mediatype.c
 +++ b/dlls/mfplat/mediatype.c
-@@ -408,6 +408,21 @@ static HRESULT WINAPI mediatype_SetUINT64(IMFMediaType *iface, REFGUID key, UINT
+@@ -408,6 +408,25 @@ static HRESULT WINAPI mediatype_SetUINT64(IMFMediaType *iface, REFGUID key, UINT
  {
      struct media_type *media_type = impl_from_IMFMediaType(iface);
  
@@ -10,12 +10,16 @@ index 99fe4d1c733..9f9b43ccdaa 100644
 +
 +    const char *sgi = getenv("SteamGameId");
 +    if (sgi && !strcmp(sgi, "2291020")) {
++        GUID type;
++        mediatype_GetGUID(iface, &MF_MT_SUBTYPE, &type);
++
 +        switch (value) {
 +            case 0x78000000440:
 +            case 0x46000000250:
 +            case 0x26000000260:
 +            case 0x4e0000002c0:
-+                return S_OK;
++                if (IsEqualGUID(&type, &MFVideoFormat_NV12))
++                    return S_OK;
 +            default:
 +                break;
 +        }
@@ -43,3 +47,18 @@ index 09b0cc9eb2a..ea9a4c89abd 100644
              {
                  MFVideoArea aperture =
                  {
+diff --git a/dlls/winegstreamer/wg_transform.c b/dlls/winegstreamer/wg_transform.c
+index a6df4a4d0e0..c47638a3923 100644
+--- a/dlls/winegstreamer/wg_transform.c
++++ b/dlls/winegstreamer/wg_transform.c
+@@ -423,6 +423,10 @@ NTSTATUS wg_transform_create(void *args)
+             transform->input_is_flipped = wg_format_video_is_flipped(&input_format);
+             if (transform->input_is_flipped != wg_format_video_is_flipped(&output_format))
+                 gst_util_set_object_arg(G_OBJECT(transform->video_flip), "method", "vertical-flip");
++            if (!(element = create_element("videoscale", "base"))
++                || !append_element(transform->container, element, &first, &last))
++                goto out;
++            g_object_set(G_OBJECT(element), "right", padding_right, "bottom", padding_bottom, NULL0
+             if (!(element = create_element("videoconvert", "base"))
+                     || !append_element(transform->container, element, &first, &last))
+                 goto out;

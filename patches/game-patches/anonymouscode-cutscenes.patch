@@ -48,17 +48,16 @@ index 09b0cc9eb2a..ea9a4c89abd 100644
                  MFVideoArea aperture =
                  {
 diff --git a/dlls/winegstreamer/wg_transform.c b/dlls/winegstreamer/wg_transform.c
-index a6df4a4d0e0..c47638a3923 100644
+index a6df4a4d0e0..69b0286a8b7 100644
 --- a/dlls/winegstreamer/wg_transform.c
 +++ b/dlls/winegstreamer/wg_transform.c
-@@ -423,6 +423,10 @@ NTSTATUS wg_transform_create(void *args)
+@@ -423,6 +423,9 @@ NTSTATUS wg_transform_create(void *args)
              transform->input_is_flipped = wg_format_video_is_flipped(&input_format);
              if (transform->input_is_flipped != wg_format_video_is_flipped(&output_format))
                  gst_util_set_object_arg(G_OBJECT(transform->video_flip), "method", "vertical-flip");
 +            if (!(element = create_element("videoscale", "base"))
 +                || !append_element(transform->container, element, &first, &last))
 +                goto out;
-+            g_object_set(G_OBJECT(element), "right", padding_right, "bottom", padding_bottom, NULL0
              if (!(element = create_element("videoconvert", "base"))
                      || !append_element(transform->container, element, &first, &last))
                  goto out;

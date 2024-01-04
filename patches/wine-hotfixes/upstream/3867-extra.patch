@@ -1,0 +1,43 @@
+diff -Naur a/dlls/mfreadwrite/reader.c b/dlls/mfreadwrite/reader.c
+--- a/dlls/mfreadwrite/reader.c	2024-01-03 20:45:00.597247782 -0500
++++ b/dlls/mfreadwrite/reader.c	2024-01-03 20:45:06.678310455 -0500
+@@ -2655,7 +2655,7 @@
+ static HRESULT WINAPI src_reader_GetServiceForStream(IMFSourceReader *iface, DWORD index, REFGUID service,
+         REFIID riid, void **object)
+ {
+-    struct source_reader *reader = impl_from_IMFSourceReader(iface);
++    struct source_reader *reader = impl_from_IMFSourceReaderEx(iface);
+     IUnknown *obj = NULL;
+     HRESULT hr = S_OK;
+ 
+@@ -2717,7 +2717,7 @@
+ static HRESULT WINAPI src_reader_GetPresentationAttribute(IMFSourceReader *iface, DWORD index,
+         REFGUID guid, PROPVARIANT *value)
+ {
+-    struct source_reader *reader = impl_from_IMFSourceReader(iface);
++    struct source_reader *reader = impl_from_IMFSourceReaderEx(iface);
+     IMFStreamDescriptor *sd;
+     BOOL selected;
+     HRESULT hr;
+@@ -2830,7 +2830,7 @@
+     if (!object)
+         return E_OUTOFMEMORY;
+ 
+-    object->IMFSourceReader_iface.lpVtbl = &srcreader_vtbl;
++    object->IMFSourceReaderEx_iface.lpVtbl = &srcreader_vtbl;
+     object->source_events_callback.lpVtbl = &source_events_callback_vtbl;
+     object->stream_events_callback.lpVtbl = &stream_events_callback_vtbl;
+     object->async_commands_callback.lpVtbl = &async_commands_callback_vtbl;
+@@ -2949,10 +2949,10 @@
+         WARN("Failed to acquired shared queue, hr %#lx.\n", hr);
+ 
+     if (SUCCEEDED(hr))
+-        hr = IMFSourceReader_QueryInterface(&object->IMFSourceReader_iface, riid, out);
++        hr = IMFSourceReader_QueryInterface(&object->IMFSourceReaderEx_iface, riid, out);
+ 
+ failed:
+-    IMFSourceReader_Release(&object->IMFSourceReader_iface);
++    IMFSourceReader_Release(&object->IMFSourceReaderEx_iface);
+     return hr;
+ }
+ 

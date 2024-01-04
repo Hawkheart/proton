@@ -342,6 +342,7 @@
     # https://gitlab.winehq.org/wine/wine/-/merge_requests/3867
     echo "WINE: -BACKPORT- Anonymous;Code backports"
     patch -Np1 < ../patches/wine-hotfixes/upstream/3867.patch
+    patch -Np1 < ../patches/wine-hotfixes/upstream/3867-extra.patch
 
     # https://gitlab.winehq.org/wine/wine/-/merge_requests/3777
     echo "WINE: -BACKPORT- R6 Siege backport"
